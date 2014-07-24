@@ -22,6 +22,14 @@ def cosine_dist(vec_1, vec_2):
     t2 = math.sqrt(sum([v**2 for v in vec_2]))
     if t1==0 or t2==0: return 0 
     return s/t1/t2
+
+def word_similarity(word_1, word_2, word_vec):
+    if word_1 not in word_vec or word_2 not in word_vec:
+        return -1
+    vec_1 = word_vec[word_1]
+    vec_2 = word_vec[word_2]
+    return cosine_dist(vec_1, vec_2)
+    
             
 def load_word2vec(p_in, is_binary=False):
     word_vec = {}
@@ -29,7 +37,7 @@ def load_word2vec(p_in, is_binary=False):
         raise Exception("no such file: %" % p_in)
     for line in open(p_in):
         arr = line.strip().split(' ')
-        if len(arr) < 2: continue
+        if len(arr) < 3: continue
         word = arr[0].lower()
         vec = map(float, arr[1:])
         word_vec[word] = norm_l2(vec)
@@ -38,9 +46,8 @@ def load_word2vec(p_in, is_binary=False):
 def get_similar_words(word_list, word_vec, top_n=10):
     vec_list = []
     for word in word_list:
-        if word not in word_vec:
-            return word
-        vec_list.append(word_vec[word])
+        if word in word_vec:
+            vec_list.append(word_vec[word])
     mean_vec = mean(vec_list)
 
     dist_dict = {}
